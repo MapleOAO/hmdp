@@ -80,10 +80,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(cacheCode == null ||!cacheCode.equals(loginForm.getCode())){
             return Result.fail("验证码错误!");
         }
-//        if (session.getAttribute("code") == null || !session.getAttribute("code").toString().equals(loginForm.getCode())) {
-//            //3.验证码是否相同
-//            return Result.fail("验证码错误!");
-//        }
+        if (session.getAttribute("code") == null || !session.getAttribute("code").toString().equals(loginForm.getCode())) {
+            //3.验证码是否相同
+            return Result.fail("验证码错误!");
+        }
         //4.判断用户是否存在
         User user = query().eq("phone", loginForm.getPhone()).one();
         if (user == null){
@@ -109,6 +109,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         stringRedisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL,TimeUnit.MINUTES);
         //8返回token
         return Result.ok(token);
+    }
+
+    @Override
+    public Result getUser(Long userId) {
+        User user = getById(userId);
+        if (user == null){
+            return Result.fail("无用户！");
+        }
+        UserDTO userDTO = BeanUtil.copyProperties(user,UserDTO.class);
+        return Result.ok(userDTO);
     }
 
     private User createUserWithPhone(String phone) {

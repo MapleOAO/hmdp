@@ -29,8 +29,6 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         if (StrUtil.isBlank(token)) {
             return true;
         }
-//        HttpSession session = request.getSession();
-//        Object user = session.getAttribute("user");
         //基于token获取redis中的用户
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(LOGIN_USER_KEY + token);
         //判断用户是否存在
